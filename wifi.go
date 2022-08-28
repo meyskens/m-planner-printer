@@ -1,11 +1,19 @@
 package main
 
-import "time"
+import (
+	"time"
+
+	"tinygo.org/x/drivers/net"
+)
 
 // connect to access point
 func connectToAP() {
-	time.Sleep(2 * time.Second)
+	adaptor.Disconnect()
+	net.ActiveDevice = nil // dirty hack to reset the NINA
+	adaptor.Configure()
+	time.Sleep(time.Second)
 	println("Connecting to " + ssid)
+
 	err := adaptor.ConnectToAccessPoint(ssid, pass, 10*time.Second)
 	if err != nil { // error connecting to AP
 		for {

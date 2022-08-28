@@ -2,6 +2,8 @@ package main
 
 import (
 	"machine"
+	"runtime"
+	"strings"
 	"time"
 
 	"github.com/mect/go-escpos"
@@ -38,7 +40,6 @@ func main() {
 		machine.NINA_ACK,
 		machine.NINA_GPIO0,
 		machine.NINA_RESETN)
-	adaptor.Configure()
 
 	uart.Configure(machine.UARTConfig{
 		TX:       tx,
@@ -60,6 +61,9 @@ func main() {
 		jobs, err := api.GetPrintJobs()
 		if err != nil {
 			println(err.Error())
+			if strings.Contains(err.Error(), "wifinina") {
+				connectToAP()
+			}
 			time.Sleep(1 * time.Second)
 			continue
 		}
@@ -73,5 +77,6 @@ func main() {
 
 		led.High()
 		time.Sleep(time.Millisecond * 500)
+		runtime.GC()
 	}
 }
